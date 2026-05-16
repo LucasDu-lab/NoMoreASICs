@@ -124,7 +124,7 @@ static std::string DummyAddress(const CChainParams &params)
     } // no default case, so the compiler can warn about missing cases
     assert(!addr.empty());
 
-    if (Assume(!IsValidDestinationString(addr))) return addr;
+    if (Assume(IsValidDestinationString(addr))) return addr;
     return {};
 }
 
