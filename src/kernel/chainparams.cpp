@@ -51,6 +51,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
     genesis.nVersion = nVersion;
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
     genesis.hashPrevBlock.SetNull();
+    genesis.hashMerkleRoot = BlockMerkleRoot(genesis);
     return genesis;
 }
 
@@ -75,23 +76,24 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 /**
  * Main network on which people trade goods and services.
  */
+
 class CMainParams : public CChainParams {
 public:
     CMainParams() {
         m_chain_type = ChainType::MAIN;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
-        consensus.nSubsidyHalvingInterval = 4204800;
+        consensus.nSubsidyHalvingInterval = 1048576;
         //consensus.script_flag_exceptions.emplace( // BIP16 exception
             //uint256{"00000000000002dc756eebf4f49723ed8d30cc28a5f108eb94b1ba88ac4f9c22"}, SCRIPT_VERIFY_NONE);
         //consensus.script_flag_exceptions.emplace( // Taproot exception
             //uint256{"0000000000000000000f14c35b2d841e986ab5441de8c585d5ffe55ea1e395ad"}, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_WITNESS);
         consensus.BIP34Height = 1;
-        consensus.BIP34Hash = uint256{"287f71b070305e38078d709cfbb61f1d6721a7e007bf7a36710b8bc645b5c674"};
-        consensus.BIP65Height = 1; 
-        consensus.BIP66Height = 1; // 
-        consensus.CSVHeight = 1; // 
-        consensus.SegwitHeight = 1; // 
+        consensus.BIP34Hash = uint256{"273d2680951e93114bdf724090a833918be736e4b9ed6f04b8943824971dfd4f"};
+        consensus.BIP65Height = 1;
+        consensus.BIP66Height = 1; //
+        consensus.CSVHeight = 1; //
+        consensus.SegwitHeight = 1; //
         consensus.MinBIP9WarningHeight = 1; // taproot activation height + miner confirmation window
         consensus.powLimit = uint256{"7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
         consensus.nPowTargetTimespan = 10 * 30; // five minutes (10 blocks)
@@ -107,7 +109,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].period = 40320;
 
         consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000000000000000000000"};
-        consensus.defaultAssumeValid = uint256{"287f71b070305e38078d709cfbb61f1d6721a7e007bf7a36710b8bc645b5c674"}; // 938343
+        consensus.defaultAssumeValid = uint256{"273d2680951e93114bdf724090a833918be736e4b9ed6f04b8943824971dfd4f"}; // 938343
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -118,15 +120,17 @@ public:
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xb5;
         pchMessageStart[3] = 0xda;
-        nDefaultPort = 8333;
+        nDefaultPort = 9333;
         nPruneAfterHeight = 100000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
-        genesis = CreateGenesisBlock(1777602850, 804614, 0x1e0ffff0, 1, 4294967296LL);
+        genesis = CreateGenesisBlock(1777602850, 804621, 0x207fffff, 1, 4294967296LL);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256{"287f71b070305e38078d709cfbb61f1d6721a7e007bf7a36710b8bc645b5c674"});
-        //assert(genesis.hashMerkleRoot == uint256{"8df8250ae03b5cdef0cb88fde17e8b6a47b3aea000b9b69846c6dde0a4ea17a6"});
+        std::cout<<"Genesis Block Hash: " << consensus.hashGenesisBlock.ToString() << std::endl;
+        std::cout<<"Merkle Root: " << genesis.hashMerkleRoot.ToString() << std::endl;
+        assert(consensus.hashGenesisBlock == uint256{"273d2680951e93114bdf724090a833918be736e4b9ed6f04b8943824971dfd4f"});
+        assert(genesis.hashMerkleRoot == uint256{"e9f7fdf28d711140bc7c8b20f412cbb16fcb40cb259604744f3106c4f87a23b2"});
 
         // Note that of those which support the service bits prefix, most only support a subset of
         // possible options.

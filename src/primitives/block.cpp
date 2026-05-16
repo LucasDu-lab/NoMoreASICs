@@ -13,7 +13,11 @@
 
 uint256 CBlockHeader::GetHash() const
 {
-    return Hash((HashWriter{} << *this).GetHash());
+    // This will now use the tight CBlockHeader serialization above
+    uint256 doubleHash = (HashWriter{} << *this).GetHash();
+
+    // Your Triple-SHA "NoMoreASICs" logic
+    return (HashWriter{} << doubleHash).GetHash();
 }
 
 std::string CBlock::ToString() const
