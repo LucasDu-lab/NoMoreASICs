@@ -155,6 +155,10 @@ public:
         bech32_hrp = "nma";
 
         vFixedSeeds = std::vector<uint8_t>();
+        vFixedSeeds = {
+            // Standard format uses the CAddress struct mapped to a network service loop
+            CAddress(CService(LookupNumeric("68.233.186.5", 9333)), NODE_NETWORK)
+        };
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
